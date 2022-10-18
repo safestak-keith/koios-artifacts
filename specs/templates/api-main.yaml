@@ -16,13 +16,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tip"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
       summary: Query Chain Tip
       description: Get the tip info about the latest block seen by chain
-  /genesis:
+  /genesis: #RPC
     get:
       tags:
         - Network
@@ -33,6 +35,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/genesis"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -52,6 +56,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/totals"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -73,6 +79,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/epoch_info"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -92,6 +100,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/epoch_params"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -100,6 +110,28 @@ paths:
       description: >-
         Get the protocol parameters for specific epoch, returns information
         about all epochs if no epoch specified
+  /epoch_block_protocols: #RPC
+    get:
+      tags:
+        - Epoch
+      parameters:
+        - $ref: "#/components/parameters/_epoch_no"
+      responses:
+        "200":
+          description: Array of distinct block protocol versions counts in epoch
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/epoch_block_protocols"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Epoch's Block Protocols
+      description: >-
+        Get the information about block protocol distribution in epoch
   /blocks:
     get:
       tags:
@@ -111,6 +143,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/blocks"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -122,7 +156,7 @@ paths:
       tags:
         - Block
       requestBody:
-        $ref: "#/components/requestBodies/block_info"
+        $ref: "#/components/requestBodies/block_hashes"
       responses:
         "200":
           description: Array of detailed block information
@@ -130,6 +164,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/block_info"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -137,11 +173,11 @@ paths:
       summary: Block Information
       description: Get detailed information about a specific block
   /block_txs: #RPC
-    get:
+    post:
       tags:
         - Block
-      parameters:
-        - $ref: "#/components/parameters/_block_hash"
+      requestBody:
+        $ref: "#/components/requestBodies/block_hashes"
       responses:
         "200":
           description: Array of transactions hashes
@@ -149,12 +185,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/block_txs"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
       summary: Block Transactions
-      description: Get a list of all transactions included in a provided block
+      description: Get a list of all transactions included in provided blocks
   /tx_info: #RPC
     post:
       tags:
@@ -168,6 +206,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tx_info"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -187,6 +227,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tx_utxos"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -206,13 +248,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tx_metadata"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
       summary: Transaction Metadata
       description: Get metadata information (if any) for given transaction(s)
-  /tx_metalabels:
+  /tx_metalabels: #RPC
     get:
       tags:
         - Transactions
@@ -223,6 +267,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tx_metalabels"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -272,6 +318,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/tx_status"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -279,11 +327,11 @@ paths:
       summary: Transaction Status (Block Confirmations)
       description: Get the number of block confirmations for a given transaction hash list
   /address_info: #RPC
-    get:
+    post:
       tags:
         - Address
-      parameters:
-        - $ref: "#/components/parameters/_address"
+      requestBody:
+        $ref: "#/components/requestBodies/payment_addresses"
       responses:
         "200":
           description: Array of address information
@@ -291,12 +339,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/address_info"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
       summary: Address Information
-      description: Get address info - balance, associated stake address (if any) and UTxO set
+      description: Get address info - balance, associated stake address (if any) and UTxO set for given addresses
   /address_txs: #RPC
     post:
       tags:
@@ -310,6 +360,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/address_txs"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -317,11 +369,11 @@ paths:
       summary: Address Transactions
       description: Get the transaction hash list of input address array, optionally filtering after specified block height (inclusive)
   /address_assets: #RPC
-    get:
+    post:
       tags:
         - Address
-      parameters:
-        - $ref: "#/components/parameters/_address_assets"
+      requestBody:
+        $ref: "#/components/requestBodies/payment_addresses"
       responses:
         "200":
           description: Array of address-owned assets
@@ -329,12 +381,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/address_assets"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
       summary: Address Assets
-      description: Get the list of all the assets (policy, name and quantity) for a given address
+      description: Get the list of all the assets (policy, name and quantity) for given addresses
   /credential_txs: #RPC
     post:
       tags:
@@ -348,6 +402,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/credential_txs"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -365,6 +421,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/account_list"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -372,11 +430,11 @@ paths:
       summary: Account List
       description: Get a list of all accounts
   /account_info: #RPC
-    get:
+    post:
       tags:
         - Account
-      parameters:
-        - $ref: "#/components/parameters/_any_address"
+      requestBody:
+        $ref: "#/components/requestBodies/stake_addresses"
       responses:
         "200":
           description: Array of account information
@@ -384,19 +442,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/account_info"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
       summary: Account Information
-      description: Get the account info of any (payment or staking) address
+      description: Get the account information for given stake addresses (accounts)
   /account_rewards: #RPC
-    get:
+    post:
       tags:
         - Account
-      parameters:
-        - $ref: "#/components/parameters/_stake_address"
-        - $ref: "#/components/parameters/_earned_epoch_no"
+      requestBody:
+        $ref: "#/components/requestBodies/stake_addresses_with_epoch_no"
       responses:
         "200":
           description: Array of reward history information
@@ -404,20 +463,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/account_rewards"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
       summary: Account Rewards
       description: >-
-        Get the full rewards history (including MIR) for a stake address, or
-        certain epoch if specified
+        Get the full rewards history (including MIR) for given stake addresses (accounts)
   /account_updates: #RPC
-    get:
+    post:
       tags:
         - Account
-      parameters:
-        - $ref: "#/components/parameters/_stake_address"
+      requestBody:
+        $ref: "#/components/requestBodies/stake_addresses"
       responses:
         "200":
           description: Array of account updates information
@@ -425,6 +485,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/account_updates"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -432,13 +494,13 @@ paths:
       summary: Account Updates
       description: >-
         Get the account updates (registration, deregistration, delegation and
-        withdrawals)
+        withdrawals) for given stake addresses (accounts)
   /account_addresses: #RPC
-    get:
+    post:
       tags:
         - Account
-      parameters:
-        - $ref: "#/components/parameters/_any_address"
+      requestBody:
+        $ref: "#/components/requestBodies/stake_addresses"
       responses:
         "200":
           description: Array of payment addresses
@@ -446,18 +508,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/account_addresses"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
       summary: Account Addresses
-      description: Get all addresses associated with an account
+      description: Get all addresses associated with given staking accounts
   /account_assets: #RPC
-    get:
+    post:
       tags:
         - Account
-      parameters:
-        - $ref: "#/components/parameters/_any_address"
+      requestBody:
+        $ref: "#/components/requestBodies/stake_addresses"
       responses:
         "200":
           description: Array of assets owned by account
@@ -465,18 +529,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/account_assets"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
       summary: Account Assets
-      description: Get the native asset balance of an account
+      description: Get the native asset balance of given accounts
   /account_history: #RPC
-    get:
+    post:
       tags:
         - Account
-      parameters:
-        - $ref: "#/components/parameters/_any_address"
+      requestBody:
+        $ref: "#/components/requestBodies/stake_addresses_with_epoch_no"
       responses:
         "200":
           description: Array of active stake values per epoch
@@ -484,12 +550,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/account_history"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
       summary: Account History
-      description: Get the staking history of an account
+      description: Get the staking history of given stake addresses (accounts)
   /asset_list:
     get:
       tags:
@@ -501,6 +569,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/asset_list"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -521,6 +591,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/asset_address_list"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -541,6 +613,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/asset_info"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -561,6 +635,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/asset_history"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -580,6 +656,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/asset_policy_info"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -600,6 +678,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/asset_summary"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -613,6 +693,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/_asset_policy"
         - $ref: "#/components/parameters/_asset_name"
+        - $ref: "#/components/parameters/_after_block_height"
       responses:
         "200":
           description: Array of Tx hashes that included the given asset
@@ -620,6 +701,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/asset_txs"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -637,6 +720,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/pool_list"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -656,13 +741,57 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/pool_info"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
       summary: Pool Information
       description: Current pool statuses and details for a specified list of pool ids
+  /pool_stake_snapshot: #RPC
+    get:
+      tags:
+        - Pool
+      parameters:
+        - $ref: "#/components/parameters/_pool_bech32"
+      responses:
+        "200":
+          description: Array of pool stake information for 3 snapshots
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/pool_snapshot"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Pool Stake Snapshot
+      description: Returns Mark, Set and Go stake snapshots for the selected pool, useful for leaderlog calculation
   /pool_delegators: #RPC
+    get:
+      tags:
+        - Pool
+      parameters:
+        - $ref: "#/components/parameters/_pool_bech32"
+      responses:
+        "200":
+          description: Array of pool delegator information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/pool_delegators"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+      summary: Pool Delegators List
+      description: Return information about live delegators for a given pool.
+  /pool_delegators_history: #RPC
     get:
       tags:
         - Pool
@@ -675,13 +804,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/pool_delegators"
+                $ref: "#/components/schemas/pool_delegators_history"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
-      summary: Pool Delegators List
-      description: Return information about delegators by a given pool and optional epoch (current if omitted)
+      summary: Pool Delegators History
+      description: Return information about active delegators (incl. history) for a given pool and epoch number (all epochs if not specified).
   /pool_blocks: #RPC
     get:
       tags:
@@ -696,13 +827,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/pool_blocks"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
           $ref: "#/components/responses/NotFound"
       summary: Pool Blocks
       description: >-
-        Return information about blocks minted by a given pool in current epoch
+        Return information about blocks minted by a given pool for all epochs
         (or _epoch_no if provided)
   /pool_history: #RPC
     get:
@@ -718,6 +851,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/pool_history_info"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -740,6 +875,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/pool_updates"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -757,6 +894,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/pool_relays"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -776,6 +915,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/pool_metadata"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -793,6 +934,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/native_script_list"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -810,6 +953,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/plutus_script_list"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -829,6 +974,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/script_redeemers"
+        "400":
+          $ref: "#/components/responses/BadRequest"
         "401":
           $ref: "#/components/responses/Unauthorized"
         "404":
@@ -850,6 +997,8 @@ components:
       description: The selected server has restricted the endpoint to be only usable via authentication. The authentication supplied was not authorized to access the endpoint
     PartialContent:
       description: The result was truncated
+    BadRequest:
+      description: The server cannot process the request due to invalid input
 tags:
   - name: Network
     description: Query information about the network
